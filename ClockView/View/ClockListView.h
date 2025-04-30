@@ -60,6 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) CGFloat cellSpacing;
 /// 是否展示添加按钮
 @property (nonatomic, assign) BOOL isShowAddButton;
+/// 添加按钮的高度
 @property (nonatomic, assign) CGFloat addButtonHeight;
 
 
