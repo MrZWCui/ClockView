@@ -14,6 +14,7 @@
 //@property (nonatomic, strong) NSMutableSet<ClockViewCell *> *reusableCells;
 @property (nonatomic, assign) NSInteger rowCount;
 @property (nonatomic, assign) NSInteger cellIndex;
+@property (nonatomic, strong) UIButton *addBtn;
 
 @end
 
@@ -25,6 +26,8 @@
         self.rowCount = 0;
         self.cellHeight = 96;
         self.cellSpacing = 20;
+        self.addButtonHeight = 50;
+        self.isShowAddButton = YES;
 //        self.reusableCells = [NSMutableSet set];
         [self config];
     }
@@ -94,7 +97,12 @@
         }
     }
     
-    self.scrollView.contentSize = CGSizeMake(self.bounds.size.width, (self.cellSpacing + self.cellHeight) * self.cellArray.count);
+    if (self.isShowAddButton) {
+        self.scrollView.contentSize = CGSizeMake(self.bounds.size.width, (self.cellSpacing + self.cellHeight) * self.cellArray.count + self.addButtonHeight);
+        [self addBtn];
+    } else {
+        self.scrollView.contentSize = CGSizeMake(self.bounds.size.width, (self.cellSpacing + self.cellHeight) * self.cellArray.count);
+    }
 }
 
 - (void)reloadData {
@@ -154,6 +162,9 @@
             cellToDelete.frame = frame;
         }
         cellToDelete.alpha = 0.0;
+        if (self.isShowAddButton) {
+            self.addBtn.frame = CGRectMake(60, self.scrollView.contentSize.height - self.addButtonHeight - (self.cellHeight + self.cellSpacing), self.bounds.size.width - 120, self.addButtonHeight);
+        }
     } completion:^(BOOL finished) {
         [cellToDelete removeFromSuperview];
         
@@ -164,16 +175,26 @@
             [self.scrollView setContentOffset:CGPointMake(0, offsetY) animated:YES];
             //延迟0.3秒,这里延迟0.3秒是为了让动画完成后再更新 contentSize
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                self.scrollView.contentSize = CGSizeMake(self.bounds.size.width, (self.cellSpacing + self.cellHeight) * (count - 1));
+                [self reloadContentSize:count];
             });
         } else {
-            self.scrollView.contentSize = CGSizeMake(self.bounds.size.width, (self.cellSpacing + self.cellHeight) * (count - 1));
+            [self reloadContentSize:count];
         }
     }];
 
     // 通知代理
     if ([self.delegate respondsToSelector:@selector(clockListView:didDeleteClockAtIndex:)]) {
         [self.delegate clockListView:self didDeleteClockAtIndex:index];
+    }
+}
+
+/// 更新 contentSize
+/// - Parameter count: cell 数量
+- (void)reloadContentSize:(NSInteger)count {
+    if (self.isShowAddButton) {
+        self.scrollView.contentSize = CGSizeMake(self.bounds.size.width, (self.cellSpacing + self.cellHeight) * (count - 1) + self.addButtonHeight);
+    } else {
+        self.scrollView.contentSize = CGSizeMake(self.bounds.size.width, (self.cellSpacing + self.cellHeight) * (count - 1));
     }
 }
 
@@ -236,6 +257,13 @@
     }
 }
 
+- (void)addClockAction {
+    // 处理添加按钮点击事件
+    if ([self.delegate respondsToSelector:@selector(clockListViewDidClickAddButton:)]) {
+        [self.delegate clockListViewDidClickAddButton:self];
+    }
+}
+
 #pragma mark - lazy load
 
 - (UIScrollView *)scrollView {
@@ -249,6 +277,17 @@
         [self addSubview:_scrollView];
     }
     return _scrollView;
+}
+
+- (UIButton *)addBtn {
+    if (!_addBtn) {
+        _addBtn = [[UIButton alloc] initWithFrame:CGRectMake(60, self.scrollView.contentSize.height - self.addButtonHeight, self.bounds.size.width - 120, self.addButtonHeight)];
+        _addBtn.backgroundColor = [UIColor clearColor];
+        [_addBtn setImage:[UIImage imageNamed:@"AddClock_icon"] forState:UIControlStateNormal];
+        [_addBtn addTarget:self action:@selector(addClockAction) forControlEvents:UIControlEventTouchUpInside];
+        [self.scrollView addSubview:_addBtn];
+    }
+    return _addBtn;
 }
 
 @end

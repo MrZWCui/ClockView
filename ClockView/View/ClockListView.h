@@ -31,6 +31,11 @@ NS_ASSUME_NONNULL_BEGIN
 @optional
 - (void)clockListView:(ClockListView *)clockListView didSwitchClockAtIndex:(NSInteger)index on:(BOOL)on;
 
+@optional
+/// 添加按钮的回调
+/// - Parameter clockListView: clockListView
+- (void)clockListViewDidClickAddButton:(ClockListView *)clockListView;
+
 /// 设置cell的样式
 /// - Parameters:
 ///   - clockListView: clockListView
@@ -53,6 +58,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) CGFloat cellHeight;
 /// 每个cell之间的间距
 @property (nonatomic, assign) CGFloat cellSpacing;
+/// 是否展示添加按钮
+@property (nonatomic, assign) BOOL isShowAddButton;
+@property (nonatomic, assign) CGFloat addButtonHeight;
 
 
 - (ClockViewCell *)dequeueCell;

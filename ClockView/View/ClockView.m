@@ -77,6 +77,11 @@
     NSLog(@"Clock at index %ld switched %@", (long)index, on ? @"ON" : @"OFF");
 }
 
+- (void)clockListViewDidClickAddButton:(ClockListView *)clockListView {
+    // Handle add button click
+    NSLog(@"Add button clicked");
+}
+
 #pragma mark - lazy load
 
 - (ClockListView *)listView {
@@ -86,6 +91,8 @@
         _listView.delegate = self;
         _listView.cellHeight = 96;//96
         _listView.cellSpacing = 20;//20
+        _listView.isShowAddButton = YES;
+        _listView.addButtonHeight = 50;
     }
     return _listView;
 }
