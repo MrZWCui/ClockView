@@ -155,15 +155,16 @@
                           delay:0
                         options:UIViewAnimationOptionCurveEaseOut
                      animations:^{
-        //当cell为最后一项时
-        if (index == count - 1) {
-            CGRect frame = cellToDelete.frame;
-            frame.origin.y += self.cellHeight;
-            cellToDelete.frame = frame;
-        }
         cellToDelete.alpha = 0.0;
         if (self.isShowAddButton) {
             self.addBtn.frame = CGRectMake(60, self.scrollView.contentSize.height - self.addButtonHeight - (self.cellHeight + self.cellSpacing), self.bounds.size.width - 120, self.addButtonHeight);
+        } else {
+            //当cell为最后一项时
+            if (index == count - 1) {
+                CGRect frame = cellToDelete.frame;
+                frame.origin.y += self.cellHeight;
+                cellToDelete.frame = frame;
+            }
         }
     } completion:^(BOOL finished) {
         [cellToDelete removeFromSuperview];
